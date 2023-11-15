@@ -1,3 +1,17 @@
+DISPLAY = """
+Enter one of the following...
+1.  Add new employee
+2.  View employee
+3.  Modify employee
+4.  Remove employee
+5.  Add new dependent
+6.  Remove dependent
+7.  Add new department
+8.  View department
+9.  Remove department
+10. Add department location
+11. Remove department location"""
+
 # 1 
 # Show proper error message for constraint violations
 def add_employee():
@@ -15,7 +29,7 @@ def view_employee():
 # Lock the record
 # Show employee information
 # Allow users to update one or more of the following fields:
-# address, sex, salary, super_ssn, and Dno
+#% address, sex, salary, super_ssn, and Dno
 def modify_employee():
     pass
 
@@ -110,6 +124,7 @@ if __name__ == "__main__":
     cursor = connection.cursor()
     
     operations()
+    print("Closing program...")
 
     # close
     connection.close()
