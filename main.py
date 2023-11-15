@@ -98,23 +98,39 @@ def add_department_location():
 def remove_department_location():
     pass
 
-
 def operations():
-    print(""" 
-Enter one of the following...
-1.  Add new employee
-2.  View employee
-3.  Modify employee
-4.  Remove employee
-5.  Add new dependent
-6.  Remove dependent
-7.  Add new department
-8.  View department
-9.  Remove department
-10. Add department location
-11. Remove department location""")
-    op = str(input("> ")) 
-    return op
+    print(DISPLAY) 
+    
+    # Continuously check for input
+    while True:
+        op = input("> ")
+        
+        # Check input
+        if not op:
+            print("Invalid input, try again")
+            continue
+
+        if not op.isnumeric() and op != "q":
+            print("Invalid input, try again")
+            continue
+
+        if op == "q": break
+            
+        # Select corresponding function
+        op = int(op)
+        if op == 1:  add_employee()
+        elif op == 2:  view_employee()
+        elif op == 3:  modify_employee()
+        elif op == 4:  remove_employee()
+        elif op == 5:  add_dependent()
+        elif op == 6:  remove_dependent()
+        elif op == 7:  add_department() 
+        elif op == 8:  view_department()
+        elif op == 9:  remove_department()
+        elif op == 10: add_department_location()
+        elif op == 11: remove_department_location()
+        else:
+            print("Invalid input, try again")
 
 if __name__ == "__main__":
     import sqlite3
