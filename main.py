@@ -88,7 +88,6 @@ def remove_department_location():
 
 
 def operations(cursor):
-
     display = """
     Menu Options: Select a command
     1. add_new_employee()
@@ -109,6 +108,20 @@ def operations(cursor):
     operation = str(input("> "))
 
     # Check if operation is valid
+        # Returning true re-runs operation method
+    if not operation: 
+        print("No operation detected, try again")
+        return True
+
+    if not operation.isnumeric(): 
+        print("Command must be numeric, try again")
+        return True
+
+    if int(operation) == 0 or int(operation) > 11: 
+        print("Command is out of bounds, try again")
+        return True
+
+
 
 
 if __name__ == '__main__':
@@ -144,7 +157,7 @@ if __name__ == '__main__':
     # Make changes to the database
     with connection:
         with connection.cursor() as cursor:
-            operations(cursor)
+            while True: operations(cursor)
 
         '''
         with connection.cursor() as cursor:
