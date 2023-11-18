@@ -2,6 +2,7 @@ import os
 from os.path import join, dirname
 import pymysql.cursors
 from dotenv import load_dotenv
+import sys
 
 if __name__ == '__main__':
     # Connect to database
@@ -18,19 +19,19 @@ if __name__ == '__main__':
         USERNAME = os.environ.get("MYSQL_USERNAME")
         PASS = os.environ.get("MYSQL_PASSWORD")
 
-    print(USERNAME)
-    print(PASS)
-
-    # TODO: Write a try-catch block to catch error messages
-
     # Connect to the database
-    # NOTE: There are error messages but ignore them for now
-    connection = pymysql.connect(host='localhost',
-                             user=USERNAME,
-                             password=PASS,
-                             database='Company',
-                             charset='utf8mb4',
-                             cursorclass=pymysql.cursors.DictCursor)
+    try: 
+        # NOTE: Ignore these error messages
+        connection = pymysql.connect(host='localhost',
+                                 user=USERNAME,
+                                 password=PASS,
+                                 database='Company',
+                                 charset='utf8mb4',
+                                 cursorclass=pymysql.cursors.DictCursor)
+        print("Connection successfully established")
+    except:
+        print("Connection can't be established\nPlease try again")
+        sys.exit(1)
 
 
     '''
