@@ -109,6 +109,11 @@ def operations(cursor):
 
     # Check if operation is valid
         # Returning true re-runs operation method
+    
+    if operation == "q":
+        print("Exiting program...")
+        return False
+
     if not operation: 
         print("No operation detected, try again")
         return True
@@ -121,7 +126,41 @@ def operations(cursor):
         print("Command is out of bounds, try again")
         return True
 
+    # Run the corresponding function
+    if operation == 1:
+        add_new_employee()
 
+    elif operation == 2:
+        view_employee()
+
+    elif operation == 3:
+        modify_employee()
+
+    elif operation == 4:
+        remove_employee()
+
+    elif operation == 5:
+        add_new_dependent()
+
+    elif operation == 6:
+        remove_dependent()
+
+    elif operation == 7:
+        add_new_department()
+
+    elif operation == 8:
+        view_department()
+
+    elif operation == 9:
+        remove_department()
+
+    elif operation == 10:
+        add_department_location()
+
+    elif operation == 11:
+        remove_department_location()
+
+    return True
 
 
 if __name__ == '__main__':
