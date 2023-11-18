@@ -12,6 +12,8 @@ Enter one of the following...
 10. Add department location
 11. Remove department location"""
 
+# TODO: work on question 1, create an employee table if one doesn't exist!, do this for the following functions as well
+
 # 1 
 # Show proper error message for constraint violations
 def add_employee():
@@ -98,14 +100,15 @@ def add_department_location():
 def remove_department_location():
     pass
 
+
+# Indefinitely checks for user input, running function according to operation selected
 def operations():
-    print(DISPLAY) 
-    
-    # Continuously check for input
     while True:
+        print(DISPLAY) 
+
+        # Make sure input is valid
         op = input("> ")
-        
-        # Check input
+
         if not op:
             print("Invalid input, try again")
             continue
@@ -118,7 +121,7 @@ def operations():
             
         # Select corresponding function
         op = int(op)
-        if op == 1:  add_employee()
+        if op == 1:    add_employee()
         elif op == 2:  view_employee()
         elif op == 3:  modify_employee()
         elif op == 4:  remove_employee()
@@ -132,15 +135,17 @@ def operations():
         else:
             print("Invalid input, try again")
 
+
 if __name__ == "__main__":
     import sqlite3
     
-    # create cursor object to manipulate database
+    # Connect to database
     connection = sqlite3.connect("company.db")
     cursor = connection.cursor()
     
+    # Deploy CRUD operations to database
     operations()
     print("Closing program...")
 
-    # close
+    # Drop connection
     connection.close()
