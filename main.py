@@ -33,8 +33,8 @@ if __name__ == '__main__':
         print("Connection can't be established\nPlease try again")
         sys.exit(1)
 
-
-    '''
+    
+    # Make changes to the database
     with connection:
         with connection.cursor() as cursor:
             pass
@@ -53,4 +53,3 @@ if __name__ == '__main__':
             # cursor.execute(sql, ('webmaster@python.org',))
             # result = cursor.fetchone()
             # print(result)
-    '''
