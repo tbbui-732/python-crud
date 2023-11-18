@@ -88,10 +88,24 @@ def remove_department_location():
 
 
 def operations(cursor):
+    pass
+    
 
 
-    if __name__ == '__main__':
-        # Connect to database
+
+
+
+
+
+
+
+
+
+
+
+
+if __name__ == '__main__':
+    # Connect to database
 
     # Establish connection to TA or to personal machine
     is_TA = str(input('Are you a TA? (y\\n)'))
