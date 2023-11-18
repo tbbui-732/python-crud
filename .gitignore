@@ -1,3 +1,6 @@
-# Ignore virtual environment
+# Virtual environments
 venv/
 env/
+
+# dotenv
+.env
