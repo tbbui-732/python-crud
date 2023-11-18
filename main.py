@@ -127,6 +127,8 @@ def operations(cursor):
         return True
 
     # Run the corresponding function
+    operation = int(operation)
+
     if operation == 1:
         print("Adding new employee...")
         add_new_employee()
