@@ -88,20 +88,27 @@ def remove_department_location():
 
 
 def operations(cursor):
-    pass
+
+    display = """
+    Menu Options: Select a command
+    1. add_new_employee()
+    2. view_employee()
+    3. modify_employee()
+    4. remove_employee()
+    5. add_new_dependent()
+    6. remove_dependent()
+    7. add_new_department()
+    8. view_department()
+    9. remove_department()
+    10. add_department_location()
+    11. remove_department_location()
+    """
     
+    # Get a user input
+    print(display)
+    operation = str(input("> "))
 
-
-
-
-
-
-
-
-
-
-
-
+    # Check if operation is valid
 
 
 if __name__ == '__main__':
@@ -137,6 +144,10 @@ if __name__ == '__main__':
     # Make changes to the database
     with connection:
         with connection.cursor() as cursor:
+            operations(cursor)
+
+        '''
+        with connection.cursor() as cursor:
             pass
         # Create a new record
             # sql = "INSERT INTO `users` (`email`, `password`) VALUES (%s, %s)"
@@ -153,3 +164,4 @@ if __name__ == '__main__':
             # cursor.execute(sql, ('webmaster@python.org',))
             # result = cursor.fetchone()
             # print(result)
+        '''
