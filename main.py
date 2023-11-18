@@ -128,36 +128,47 @@ def operations(cursor):
 
     # Run the corresponding function
     if operation == 1:
+        print("Adding new employee...")
         add_new_employee()
 
     elif operation == 2:
+        print("Viewing employee...")
         view_employee()
 
     elif operation == 3:
+        print("Modifying employee...")
         modify_employee()
 
     elif operation == 4:
+        print("Removing employee...")
         remove_employee()
 
     elif operation == 5:
+        print("Adding new dependent...")
         add_new_dependent()
 
     elif operation == 6:
+        print("Removing dependent...")
         remove_dependent()
 
     elif operation == 7:
+        print("Adding new department...")
         add_new_department()
 
     elif operation == 8:
+        print("Viewing department...")
         view_department()
 
     elif operation == 9:
+        print("Removing department...")
         remove_department()
 
     elif operation == 10:
+        print("Adding department location...")
         add_department_location()
 
     elif operation == 11:
+        print("Removing department location...")
         remove_department_location()
 
     return True
