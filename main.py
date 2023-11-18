@@ -4,12 +4,45 @@ import pymysql.cursors
 from dotenv import load_dotenv
 import sys
 
-def add_new_employee():
+def add_new_employee(cursor, connection):
     """
     Add new employee: Allow users to create a new employee record using this menu option.
     Show proper error message for constraint violations.
     """
-    pass
+    
+    print("Format the following values like below")
+    print("Fname,Minit,Lname,Ssn,Bdate,Address,Sex,Salary,Super_ssn,Dno")
+    employee_data = str(input("> ")).split(",")
+    
+    new_employee_data = {
+        'Fname':     employee_data[0],
+        'Minit':     employee_data[1],
+        'Lname':     employee_data[2],
+        'Ssn':       employee_data[3],
+        'Bdate':     employee_data[4],
+        'Address':   employee_data[5],
+        'Sex':       employee_data[6],
+        'Salary':    int(employee_data[7]),
+        'Super_ssn': employee_data[8],
+        'Dno':       int(employee_data[9])
+    }
+
+    sql = """
+            INSERT INTO EMPLOYEE (Fname, Minit, Lname, Ssn, Bdate, Address, Sex, Salary, Super_ssn, Dno)
+            VALUES (%(Fname)s, %(Minit)s, %(Lname)s, %(Ssn)s, %(Bdate)s, %(Address)s, %(Sex)s, %(Salary)s, %(Super_ssn)s, %(Dno)s)
+    """
+
+    try: 
+        cursor.execute(sql, new_employee_data)
+        connection.commit()
+        print("Successfully added new employee")
+    except Exception as e:
+        print("Exception caught: " + str(e))
+        if 'Ssn' in str(e) or 'ssn' in str(e):
+            print("Ensure that social security is in format xxxxxxxxx, not xxx-xx-xxxx")
+        if "employee.PRIMARY" in str(e):
+            print("No changes were made")
+
 
 def view_employee():
     """
@@ -87,7 +120,7 @@ def remove_department_location():
     pass
 
 
-def operations(cursor):
+def operations(cursor, connection):
     display = """
     Menu Options: Select a command
     1. add_new_employee()
@@ -131,7 +164,7 @@ def operations(cursor):
 
     if operation == 1:
         print("Adding new employee...")
-        add_new_employee()
+        add_new_employee(cursor, connection)
 
     elif operation == 2:
         print("Viewing employee...")
@@ -209,24 +242,4 @@ if __name__ == '__main__':
     # Make changes to the database
     with connection:
         with connection.cursor() as cursor:
-            while True: operations(cursor)
-
-        '''
-        with connection.cursor() as cursor:
-            pass
-        # Create a new record
-            # sql = "INSERT INTO `users` (`email`, `password`) VALUES (%s, %s)"
-            # cursor.execute(sql, ('webmaster@python.org', 'very-secret'))
-
-        # connection is not autocommit by default. So you must commit to save
-        # your changes.
-        connection.commit()
-
-        with connection.cursor() as cursor:
-            pass
-        # Read a single record
-            # sql = "SELECT `id`, `password` FROM `users` WHERE `email`=%s"
-            # cursor.execute(sql, ('webmaster@python.org',))
-            # result = cursor.fetchone()
-            # print(result)
-        '''
+            while True: operations(cursor, connection)
