@@ -1,13 +1,29 @@
 import pymysql.cursors
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # Connect to database
-    connection = pymysql.connect(host='localhost',
-                             user='user',
-                             password='passwd',
-                             database='db',
-                             charset='utf8mb4',
-                             cursorclass=pymysql.cursors.DictCursor)
+    
+    # Establish connection to TA or to personal machine
+    is_TA = str(input('Are you a TA? (y\\n)'))
+    if is_TA == 'y':
+        USER = 'root'
+        PASSWORD = ''
+    else:
+        USER = ''
+        PASSWORD = ''
+
+    HOST = 'localhost'
+    DATABASE = 'Company'
+
+    connection = pymysql.connect(
+                     host = HOST,
+                     user = USER,
+                     password = PASSWORD,
+                     database = DATABASE,
+                     charset = 'utf8mb4',
+                     cursorclass = pymysql.cursors.DictCursor
+                )
+
     with connection:
         with connection.cursor() as cursor:
             # Create a new record
