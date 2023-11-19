@@ -89,7 +89,7 @@ def view_employee(cursor):
         print("Exception caught: " + str(e))
 
 
-def modify_employee():
+def modify_employee(cursor, connection):
     """
     Modify employee: Ask for employee SSN. Lock the record. Show employee information.
     Then allow users to update one or more of the following fields: address, sex, salary,
@@ -210,7 +210,7 @@ def operations(cursor, connection):
 
     elif operation == 3:
         print("Modifying employee...")
-        modify_employee()
+        modify_employee(cursor, connection)
 
     elif operation == 4:
         print("Removing employee...")
