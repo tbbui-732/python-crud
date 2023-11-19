@@ -176,7 +176,6 @@ def modify_employee(cursor, connection):
         connection.rollback()
 
 
-# TODO: Test for dependency violations!!!
 def _remove_employee_dependencies(cursor, connection, essn):
     """
     Employees have references to the following:
@@ -485,6 +484,9 @@ def view_department(cursor):
 
 
 # TODO: Check for dependency errors when deleting
+def _remove_department_dependencies(cursor, connection, dnumber):
+    pass
+
 def remove_department(cursor, connection):
     """
     Remove department: Ask for Dnumber. Lock department record. Show department
@@ -572,7 +574,6 @@ def add_department_location(cursor, connection):
     except Exception as e:
         print("Exception caught: " + str(e))
         connection.rollback()
-
 
 def remove_department_location(cursor, connection):
     """
