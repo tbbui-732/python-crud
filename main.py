@@ -4,13 +4,11 @@ import pymysql.cursors
 from dotenv import load_dotenv
 import sys
 
-# FIXME: Inform user to be connected to their MySQL server
-
+"""
+Add new employee: Allow users to create a new employee record using this menu option.
+Show proper error message for constraint violations.
+"""
 def add_new_employee(cursor, connection):
-    """
-    Add new employee: Allow users to create a new employee record using this menu option.
-    Show proper error message for constraint violations.
-    """
 
     print("Format the following values like below")
     print("Fname,Minit,Lname,Ssn,Bdate,Address,Sex,Salary,Super_ssn,Dno")
@@ -46,11 +44,11 @@ def add_new_employee(cursor, connection):
             print("No changes were made")
 
 
+"""
+View employee: Ask for employee SSN. For the employee with the given SSN, show all the
+attributes from EMPLOYEE table. Also show supervisor name, department name, and dependents.
+"""
 def view_employee(cursor):
-    """
-    View employee: Ask for employee SSN. For the employee with the given SSN, show all the
-    attributes from EMPLOYEE table. Also show supervisor name, department name, and dependents.
-    """
 
     print("Enter employee SSN that you want to view")
     ssn = str(input("> "))
@@ -91,12 +89,12 @@ def view_employee(cursor):
         print("Exception caught: " + str(e))
 
 
+"""
+Modify employee: Ask for employee SSN. Lock the record. Show employee information.
+Then allow users to update one or more of the following fields: address, sex, salary,
+super_ssn, and Dno.
+"""
 def modify_employee(cursor, connection):
-    """
-    Modify employee: Ask for employee SSN. Lock the record. Show employee information.
-    Then allow users to update one or more of the following fields: address, sex, salary,
-    super_ssn, and Dno.
-    """
 
     # Query user for employee SSN to modify
     print("Enter employee SSN that you want to modify")
@@ -176,11 +174,11 @@ def modify_employee(cursor, connection):
         connection.rollback()
 
 
+"""
+Employees have references to the following:
+    Dependents
+"""
 def _remove_employee_dependencies(cursor, connection, essn):
-    """
-    Employees have references to the following:
-        Dependents
-    """
 
     # Confirm to user to delete dependents
     print("This action can't be completed without deleting all dependents")
@@ -252,13 +250,13 @@ def _remove_employee_dependencies(cursor, connection, essn):
     return True
     
 
+"""
+Remove employee: Ask for employee SSN. Lock employee record. Show employee
+information. Ask for confirmation to delete. If confirmed, remove the employee. If any
+dependencies exist, show a warning message and ask them to remove the dependencies first
+(i.e., resolve referential integrity constraints violations first).
+"""
 def remove_employee(cursor, connection):
-    """
-    Remove employee: Ask for employee SSN. Lock employee record. Show employee
-    information. Ask for confirmation to delete. If confirmed, remove the employee. If any
-    dependencies exist, show a warning message and ask them to remove the dependencies first
-    (i.e., resolve referential integrity constraints violations first).
-    """
     
     # Query user for employee SSN 
     print("Enter SSN of employee to be removed")
@@ -310,11 +308,11 @@ def remove_employee(cursor, connection):
             break
 
 
+"""
+Add new dependent: Ask for employee SSN. Lock employee record. Show all
+dependents. Ask for new dependent information and create a new dependent record.
+"""
 def add_new_dependent(cursor, connection):
-    """
-    Add new dependent: Ask for employee SSN. Lock employee record. Show all
-    dependents. Ask for new dependent information and create a new dependent record.
-    """
     
     # Query user for SSN
     print("Enter SSN of employee to add dependent")
@@ -372,12 +370,11 @@ def add_new_dependent(cursor, connection):
         connection.rollback()
 
 
+"""
+Remove dependent: Ask for employee SSN. Lock employee record. Show all
+dependents. Ask for the name of the dependent to be removed. Remove the dependent.
+"""
 def remove_dependent(cursor, connection):
-    """
-    Remove dependent: Ask for employee SSN. Lock employee record. Show all
-    dependents. Ask for the name of the dependent to be removed. Remove the dependent.
-    """
-
     # Query user for employee SSN
     print("Enter employee SSN to remove dependent")
     ssn = str(input("> "))
@@ -417,11 +414,11 @@ def remove_dependent(cursor, connection):
         connection.rollback()
 
 
+"""
+Add new department: Allow users to create a new department record using this menu
+option. Show proper error message for constraint violations.
+"""
 def add_new_department(cursor, connection):
-    """
-    Add new department: Allow users to create a new department record using this menu
-    option. Show proper error message for constraint violations.
-    """
     
     # Query user for new department data
     print("Format the new department values as such...")
@@ -446,11 +443,11 @@ def add_new_department(cursor, connection):
         print("Exception caught: " + str(e))
 
 
+"""
+View department: Ask for Dnumber. Show a list of departments, their manager’s name,
+and all department locations.
+"""
 def view_department(cursor):
-    """
-    View department: Ask for Dnumber. Show a list of departments, their manager’s name,
-    and all department locations.
-    """
 
     # Query user for Dnumber
     print("Enter Dnumber in order to view department information")
@@ -483,7 +480,10 @@ def view_department(cursor):
         print("Exception caught: " + str(e))
 
 
-# TODO: Check for dependency errors when deleting
+"""
+Helper function for removing department 
+Deletes and nullifies dependencies
+"""
 def _remove_department_dependencies(cursor, connection, dnumber):
     # Confirm to user to remove all dependencies
     print("Dependencies for this department must be deleted to proceed")
@@ -557,13 +557,13 @@ def _remove_department_dependencies(cursor, connection, dnumber):
     return True
 
 
+"""
+Remove department: Ask for Dnumber. Lock department record. Show department
+information. Ask for confirmation to delete this department. If confirmed, remove the
+department. If any dependencies exist, show a warning message and ask them to remove the
+dependencies first (i.e., resolve referential integrity constraints violations first).
+"""
 def remove_department(cursor, connection):
-    """
-    Remove department: Ask for Dnumber. Lock department record. Show department
-    information. Ask for confirmation to delete this department. If confirmed, remove the
-    department. If any dependencies exist, show a warning message and ask them to remove the
-    dependencies first (i.e., resolve referential integrity constraints violations first).
-    """
     
     # Show departments
     sql = """
@@ -608,11 +608,11 @@ def remove_department(cursor, connection):
             break
 
 
+"""
+Add department location: Ask for Dnumber. Lock department record. Show all
+locations. Ask for a new location and create a new location record.
+"""
 def add_department_location(cursor, connection):
-    """
-    Add department location: Ask for Dnumber. Lock department record. Show all
-    locations. Ask for a new location and create a new location record.
-    """
     
     # Show all locations
     sql = """
@@ -653,7 +653,11 @@ def add_department_location(cursor, connection):
         print("Exception caught: " + str(e))
         connection.rollback()
 
-# TODO: Fix the dependency issues here by altering constraint requirements!
+
+"""
+Helper function for removing department location
+Removes constraints associated with foreign key
+"""
 def _update_remove_dloc_dependencies(cursor, connection, dnumber, dlocation):
     # Remove all foreign key constraints
     remove_constraint = """
@@ -697,11 +701,11 @@ def _update_remove_dloc_dependencies(cursor, connection, dnumber, dlocation):
     return True
 
 
+"""
+Remove department location: Ask for Dnumber. Lock department record. Show all
+locations. Ask for the location to be removed. Remove the location.
+"""
 def remove_department_location(cursor, connection):
-    """
-    Remove department location: Ask for Dnumber. Lock department record. Show all
-    locations. Ask for the location to be removed. Remove the location.
-    """
 
     # Show all locations
     try:
@@ -745,6 +749,9 @@ def remove_department_location(cursor, connection):
         connection.rollback()
 
 
+"""
+Displays operations that users can select
+"""
 def operations(cursor, connection):
     display = """
     Menu Options: Select a command
@@ -851,7 +858,7 @@ if __name__ == '__main__':
 
     # Connect to the database
     try: 
-        # NOTE: Ignore these error messages
+        # NOTE: Ignore these error messages, they do not actually affect the code
         connection = pymysql.connect(host='localhost',
                                      user=USERNAME,
                                      password=PASS,
@@ -860,7 +867,8 @@ if __name__ == '__main__':
                                      cursorclass=pymysql.cursors.DictCursor)
         print("Connection successfully established")
     except:
-        print("Connection can't be established\nPlease try again")
+        print("Connection can't be established")
+        print("Ensure that you are connected to your SQL server")
         sys.exit(1)
 
 
