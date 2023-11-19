@@ -360,12 +360,42 @@ def add_new_department(cursor, connection):
         print("Exception caught: " + str(e))
 
 
-def view_department():
+def view_department(cursor):
     """
     View department: Ask for Dnumber. Show a list of departments, their manager’s name,
     and all department locations.
     """
-    pass
+
+    # Query user for Dnumber
+    print("Enter Dnumber in order to view department information")
+    dno = int(input("> ")) 
+    dno_obj = {"Dno": dno}
+
+    # Show row, manager's name, and all department locations
+    sql = """
+            SELECT 
+                dept.Dname,
+                dept.Dnumber,
+                dept.Mgr_ssn,
+                dept.Mgr_start_date,
+                mgr.Fname,
+                mgr.Lname,
+                loc.Dlocation
+            FROM DEPARTMENT AS dept
+            LEFT JOIN 
+                EMPLOYEE AS mgr ON dept.Mgr_ssn = mgr.Ssn
+            LEFT JOIN 
+                DEPT_LOCATIONS AS loc ON dept.Dnumber = loc.Dnumber
+            WHERE dept.Dnumber = %(Dno)s;
+    """
+
+    try:
+        cursor.execute(sql, dno_obj)
+        rows = cursor.fetchall()
+        for row in rows: print(row)
+    except Exception as e:
+        print("Exception caught: " + str(e))
+
 
 def remove_department():
     """
@@ -463,7 +493,7 @@ def operations(cursor, connection):
 
     elif operation == 8:
         print("Viewing department...")
-        view_department()
+        view_department(cursor)
 
     elif operation == 9:
         print("Removing department...")
