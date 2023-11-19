@@ -487,12 +487,49 @@ def add_department_location(cursor, connection):
         connection.rollback()
 
 
-def remove_department_location():
+def remove_department_location(cursor, connection):
     """
     Remove department location: Ask for Dnumber. Lock department record. Show all
     locations. Ask for the location to be removed. Remove the location.
     """
-    pass
+
+    # Show all locations
+    try:
+        sql = "SELECT * FROM DEPT_LOCATIONS"
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        for row in rows:
+            print(row)
+    except Exception as e:
+        print("Exception caught while fetching department locations: " + str(e))
+        return
+
+    # Query user for Dnumber
+    print("Enter Dnumber of department location you want to remove")
+    dnumber = str(input("> "))
+    
+    # Query user for location 
+    print("Enter location of department you want to remove")
+    location = str(input("> "))
+
+    # Create data object to pass to execute
+    data_obj = {
+            "Dnumber": dnumber,
+            "Dlocation": location
+    }
+
+    # Remove location
+    sql = """
+            DELETE FROM DEPT_LOCATIONS
+            WHERE Dnumber = %(Dnumber)s AND Dlocation = %(Dlocation)s
+    """
+    try: 
+        cursor.execute(sql, data_obj)
+        connection.commit()
+        print("Successfully removed department location")
+    except Exception as e:
+        print("Exception caught: " + str(e))
+        connection.rollback()
 
 
 def operations(cursor, connection):
@@ -579,7 +616,7 @@ def operations(cursor, connection):
 
     elif operation == 11:
         print("Removing department location...")
-        remove_department_location()
+        remove_department_location(cursor, connection)
 
     return True
 
