@@ -224,12 +224,67 @@ def remove_employee(cursor, connection):
         connection.rollback()
 
 
-def add_new_dependent():
+def add_new_dependent(cursor, connection):
     """
     Add new dependent: Ask for employee SSN. Lock employee record. Show all
     dependents. Ask for new dependent information and create a new dependent record.
     """
-    pass
+    
+    # Query user for SSN
+    print("Enter SSN of employee to add dependent")
+    ssn = str(input("> "))
+    ssn_obj = {"Ssn": ssn}
+
+    # Show current dependents if any exist
+    sql = """
+            SELECT
+                e.Fname AS Employee_Fname,
+                e.Lname AS Employee_Lname,
+                dep.Dependent_name
+            FROM EMPLOYEE e
+            LEFT JOIN 
+                DEPENDENT dep ON e.Ssn = dep.Essn
+            WHERE e.Ssn = %(Ssn)s
+    """ 
+    try:
+        cursor.execute(sql, ssn_obj)
+        rows = cursor.fetchall()
+        print("Dependents:")
+        for row in rows:
+            print(row)
+    except Exception as e:
+        print("Exception caught: " + str(e))
+        return
+    
+    # Query user for new dependent data
+    print("Enter the values for the new dependent in a single string split by commas")
+    print("Dependent_name,Sex,Birthday,Relationship")
+    dependent_data = str(input("> ")).split(",")
+
+    # Add new dependent
+    new_dependent_data = {
+            "Essn": ssn,
+            "Dependent_name": dependent_data[0],
+            "Sex":            dependent_data[1],
+            "Bdate":          dependent_data[2],
+            "Relationship":   dependent_data[3]
+    }
+    print(new_dependent_data)
+    sql = """
+            INSERT INTO DEPENDENT 
+                (Essn, Dependent_name, Sex, Bdate, Relationship)
+            VALUES 
+                (%(Essn)s, %(Dependent_name)s, %(Sex)s, %(Bdate)s, %(Relationship)s)
+             
+    """
+    try:
+        cursor.execute(sql, new_dependent_data)
+        connection.commit()
+        print("Succesfully added new dependent")
+    except Exception as e:
+        print("Exception caught: " + str(e))
+        connection.rollback()
+
 
 def remove_dependent():
     """
@@ -336,7 +391,7 @@ def operations(cursor, connection):
 
     elif operation == 5:
         print("Adding new dependent...")
-        add_new_dependent()
+        add_new_dependent(cursor, connection)
 
     elif operation == 6:
         print("Removing dependent...")
