@@ -653,6 +653,11 @@ def add_department_location(cursor, connection):
         print("Exception caught: " + str(e))
         connection.rollback()
 
+# TODO: Fix the dependency issues here by altering constraint requirements!
+def _update_remove_dloc_dependencies(cursor, connection, dnumber, dlocation):
+    pass
+
+
 def remove_department_location(cursor, connection):
     """
     Remove department location: Ask for Dnumber. Lock department record. Show all
