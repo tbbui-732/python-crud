@@ -492,6 +492,38 @@ def _remove_department_dependencies(cursor, connection, dnumber):
     if confirm == "n":
         print("No changes have been made")
         return False
+    
+    # Nullify employee Dno 
+    sql = """
+            UPDATE EMPLOYEE 
+            SET Dno = NULL 
+            WHERE Dno = %(Dnumber)
+    """
+    try:
+        cursor.execute(sql, {"Dnumber": dnumber}) 
+        connection.commit()
+        print("Successfully nullified employee Dno")
+    except Exception as e:
+        print("Exception caught: " + str(e))
+        connection.rollback()
+        return False
+
+
+    # Delete department location
+    sql = """
+            DELETE FROM DEPT_LOCATIONS
+            WHERE Dnumber = %(Dnumber)s
+    """
+    try:
+        cursor.execute(sql, {"Dnumber": dnumber})
+        connection.commit()
+        print("Successfully deleted department location dependency")
+    except Exception as e:
+        print("Exception caught: " + str(e))
+        connection.rollback()
+        return False
+
+    return True
 
 
 def remove_department(cursor, connection):
