@@ -71,14 +71,14 @@ def view_employee(cursor):
                 d.Dname AS Department_Name,
                 dep.Dependent_name
             FROM EMPLOYEE e
-            INNER JOIN 
+            LEFT JOIN 
                 EMPLOYEE s ON e.Super_ssn = s.Ssn
-            INNER JOIN 
+            LEFT JOIN 
                 DEPARTMENT d ON e.Dno = d.Dnumber
-            INNER JOIN 
+            LEFT JOIN 
                 DEPENDENT dep ON e.Ssn = dep.Essn
             WHERE
-                e.Ssn = %(Ssn)s;
+                e.Ssn = %(Ssn)s
     """
 
     try: 
@@ -174,14 +174,55 @@ def modify_employee(cursor, connection):
         connection.rollback()
 
 
-def remove_employee():
+# TODO: Test for dependency violations!!!
+def remove_employee(cursor, connection):
     """
     Remove employee: Ask for employee SSN. Lock employee record. Show employee
     information. Ask for confirmation to delete. If confirmed, remove the employee. If any
     dependencies exist, show a warning message and ask them to remove the dependencies first
     (i.e., resolve referential integrity constraints violations first).
     """
-    pass
+    
+    # Query user for employee SSN 
+    print("Enter SSN of employee to be removed")
+    ssn = str(input("> "))
+    ssn_obj = {"Ssn": ssn}
+
+    # Show employee information
+    sql = "SELECT * FROM EMPLOYEE WHERE Ssn=%(Ssn)s"
+    try: 
+        cursor.execute(sql, ssn_obj)
+        row = cursor.fetchone()
+        if "None" in row:
+            print(f"Employee {ssn} does not exist")
+            return
+        print(row)
+    except Exception as e:
+        print("Exception caught: " + str(e))
+        return
+
+
+    # Ask for confirmation to delete
+    print("Are you sure you want to delete? (y\\n)")
+    confirm = str(input("> "))
+
+    if confirm == "n":
+        print("No changes have been made")
+        return
+
+    # Remove employee 
+    sql = """
+            DELETE FROM EMPLOYEE
+            WHERE Ssn = %(Ssn)s
+    """
+    try: 
+        cursor.execute(sql, ssn_obj)
+        connection.commit()
+        print(f"Succesfully removed employee {ssn}")
+    except Exception as e:
+        print("Exception caught: " + str(e))
+        connection.rollback()
+
 
 def add_new_dependent():
     """
@@ -291,7 +332,7 @@ def operations(cursor, connection):
 
     elif operation == 4:
         print("Removing employee...")
-        remove_employee()
+        remove_employee(cursor, connection)
 
     elif operation == 5:
         print("Adding new dependent...")
