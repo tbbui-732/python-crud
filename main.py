@@ -397,14 +397,49 @@ def view_department(cursor):
         print("Exception caught: " + str(e))
 
 
-def remove_department():
+# TODO: Check for dependency errors when deleting
+def remove_department(cursor, connection):
     """
     Remove department: Ask for Dnumber. Lock department record. Show department
     information. Ask for confirmation to delete this department. If confirmed, remove the
     department. If any dependencies exist, show a warning message and ask them to remove the
     dependencies first (i.e., resolve referential integrity constraints violations first).
     """
-    pass
+    
+    # Show departments
+    sql = """
+            SELECT * FROM DEPARTMENT
+    """
+    try: 
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        for row in rows: print(row)
+    except Exception as e:
+        print("Exception caught: " + str(e))
+
+    # Query user for Dnumber
+    print("Enter Dnumber for department to be removed")
+    dno = str(input("> "))
+    dno_obj = {"Dnumber": dno}
+
+    # Ask for confirmation
+    confirm = str(input(f"Are you sure you want to delete {dno}? (y\\n)"))
+    if confirm == "n":
+        print("No changes have been made")
+        return
+
+    # Remove the department
+    sql = """
+            DELETE FROM DEPARTMENT 
+            WHERE Dnumber = %(Dnumber)s
+    """
+    try:
+        cursor.execute(sql, dno_obj)
+        connection.commit()
+        print("Successfully removed department value")
+    except Exception as e:
+        print("Exception caught: " + str(e))
+
 
 def add_department_location():
     """
@@ -497,7 +532,7 @@ def operations(cursor, connection):
 
     elif operation == 9:
         print("Removing department...")
-        remove_department()
+        remove_department(cursor, connection)
 
     elif operation == 10:
         print("Adding department location...")
