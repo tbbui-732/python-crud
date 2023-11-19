@@ -220,6 +220,9 @@ def remove_employee(cursor, connection):
         connection.commit()
         print(f"Succesfully removed employee {ssn}")
     except Exception as e:
+        # Dependency error -> Must remove dependencies first!
+        if "1451" in str(e):
+            return _remove_employee_dependencies(cursor, connection)
         print("Exception caught: " + str(e))
         connection.rollback()
 
