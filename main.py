@@ -485,7 +485,14 @@ def view_department(cursor):
 
 # TODO: Check for dependency errors when deleting
 def _remove_department_dependencies(cursor, connection, dnumber):
-    pass
+    # Confirm to user to remove all dependencies
+    print("Dependencies for this department must be deleted to proceed")
+    print("Please confirm that you are okay with this (y\\n)")
+    confirm = str(input("> "))
+    if confirm == "n":
+        print("No changes have been made")
+        return False
+
 
 def remove_department(cursor, connection):
     """
