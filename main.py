@@ -3,6 +3,27 @@ from os.path import join, dirname
 import pymysql.cursors
 from dotenv import load_dotenv
 import sys
+import fcntl
+
+"""
+Used to lock programs when another session is active
+"""
+LOCK_FILE_PATH = "/tmp/my_cli_program.lock"
+
+def acquire_lock():
+    try:
+        # Open the lock file in write mode and use exclusive lock
+        lock_file = open(LOCK_FILE_PATH, "w")
+        fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        return lock_file
+    except IOError:
+        print("Another instance is running. Please wait.")
+        return None
+
+def release_lock(lock_file):
+    fcntl.flock(lock_file, fcntl.LOCK_UN)
+    lock_file.close()
+    os.remove(LOCK_FILE_PATH)
 
 """
 Add new employee: Allow users to create a new employee record using this menu option.
