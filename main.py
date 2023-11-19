@@ -175,6 +175,15 @@ def modify_employee(cursor, connection):
 
 
 # TODO: Test for dependency violations!!!
+def _remove_employee_dependencies(cursor, connection):
+    """
+    Employees have references to the following:
+        Dependents
+    """
+
+    
+
+
 def remove_employee(cursor, connection):
     """
     Remove employee: Ask for employee SSN. Lock employee record. Show employee
