@@ -27,7 +27,6 @@ def release_lock(lock_file):
 
 """
 Add new employee: Allow users to create a new employee record using this menu option.
-Show proper error message for constraint violations.
 """
 def add_new_employee(cursor, connection):
 
@@ -63,6 +62,7 @@ def add_new_employee(cursor, connection):
             print("Ensure that social security is in format xxxxxxxxx, not xxx-xx-xxxx")
         if "employee.PRIMARY" in str(e):
             print("No changes were made")
+        connection.rollback()
 
 
 """
@@ -273,9 +273,7 @@ def _remove_employee_dependencies(cursor, connection, essn):
 
 """
 Remove employee: Ask for employee SSN. Lock employee record. Show employee
-information. Ask for confirmation to delete. If confirmed, remove the employee. If any
-dependencies exist, show a warning message and ask them to remove the dependencies first
-(i.e., resolve referential integrity constraints violations first).
+information
 """
 def remove_employee(cursor, connection):
     
@@ -316,7 +314,7 @@ def remove_employee(cursor, connection):
         try: 
             cursor.execute(sql, ssn_obj)
             connection.commit()
-            print(f"Succesfully removed employee {ssn}")
+            print(f"Successfully removed employee {ssn}")
             break
         except Exception as e:
             # Dependency error -> Must remove dependencies first!
@@ -580,9 +578,7 @@ def _remove_department_dependencies(cursor, connection, dnumber):
 
 """
 Remove department: Ask for Dnumber. Lock department record. Show department
-information. Ask for confirmation to delete this department. If confirmed, remove the
-department. If any dependencies exist, show a warning message and ask them to remove the
-dependencies first (i.e., resolve referential integrity constraints violations first).
+information
 """
 def remove_department(cursor, connection):
     
@@ -679,7 +675,7 @@ def add_department_location(cursor, connection):
 Helper function for removing department location
 Removes constraints associated with foreign key
 """
-def _update_remove_dloc_dependencies(cursor, connection, dnumber, dlocation):
+def _update_remove_dloc_dependencies(cursor, connection):
     # Remove all foreign key constraints
     remove_constraint = """
             ALTER TABLE EMPLOYEE 
@@ -764,7 +760,7 @@ def remove_department_location(cursor, connection):
         print("Successfully removed department location")
     except Exception as e:
         if "1451" in str(e):
-            if not _update_remove_dloc_dependencies(cursor, connection, dnumber, location):
+            if not _update_remove_dloc_dependencies(cursor, connection):
                 pass
         print("Exception caught: " + str(e))
         connection.rollback()
