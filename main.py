@@ -218,8 +218,19 @@ def _remove_employee_dependencies(cursor, connection, essn):
     except Exception as e:
         print("Exception caught: " + str(e))
         return False
-    
+   
     # Delete rows from Works_On
+    sql = """
+            DELETE FROM WORKS_ON 
+            WHERE Essn = %(Essn)s
+    """
+    try: 
+        cursor.execute(sql, {"Essn": essn})
+        connection.commit()
+        print("Successfully deleted rows from Works_On")
+    except Exception as e:
+        print("Exception caught: " + str(e))
+        return False
 
     return True
     
