@@ -441,12 +441,51 @@ def remove_department(cursor, connection):
         print("Exception caught: " + str(e))
 
 
-def add_department_location():
+def add_department_location(cursor, connection):
     """
     Add department location: Ask for Dnumber. Lock department record. Show all
     locations. Ask for a new location and create a new location record.
     """
-    pass
+    
+    # Show all locations
+    sql = """
+            SELECT * FROM DEPT_LOCATIONS
+    """
+    try:
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        for row in rows: print(row)
+    except Exception as e:
+        print("Exception caught: " + str(e))
+        return
+
+    # Query user for Dnumber
+    print("Enter Dnumber to add department location")
+    dnumber = str(input("> "))
+
+    # Query for new location 
+    print("Enter the name of your new location")
+    location = str(input("> "))
+    location_obj = {
+        "Dnumber": dnumber,
+        "Dlocation": location
+    }
+
+    # Create new location record
+    sql = """
+        INSERT INTO DEPT_LOCATIONS
+            (Dnumber, Dlocation)
+        VALUES 
+            (%(Dnumber)s, %(Dlocation)s)
+    """
+    try: 
+        cursor.execute(sql, location_obj)
+        connection.commit()
+        print("Successfully added new department location")
+    except Exception as e:
+        print("Exception caught: " + str(e))
+        connection.rollback()
+
 
 def remove_department_location():
     """
@@ -536,7 +575,7 @@ def operations(cursor, connection):
 
     elif operation == 10:
         print("Adding department location...")
-        add_department_location()
+        add_department_location(cursor, connection)
 
     elif operation == 11:
         print("Removing department location...")
