@@ -4,6 +4,8 @@ import pymysql.cursors
 from dotenv import load_dotenv
 import sys
 
+# FIXME: Inform user to be connected to their MySQL server
+
 def add_new_employee(cursor, connection):
     """
     Add new employee: Allow users to create a new employee record using this menu option.
@@ -175,14 +177,52 @@ def modify_employee(cursor, connection):
 
 
 # TODO: Test for dependency violations!!!
-def _remove_employee_dependencies(cursor, connection):
+def _remove_employee_dependencies(cursor, connection, essn):
     """
     Employees have references to the following:
         Dependents
     """
 
-    
+    # Confirm to user to delete dependents
+    print("This action can't be completed without deleting dependents")
+    print("Please confirm that you are willing to delete dependents (y\\n)")
+    confirm = str(input("> "))
+    if confirm == "n":
+        print("No changes have been made")
+        return False
 
+    # Delete all children/spouse dependents 
+    sql = """
+            DELETE FROM DEPENDENT
+            WHERE Essn = %(Essn)s
+    """ 
+    try: 
+        cursor.execute(sql, {"Essn": essn})
+        connection.commit()
+        print("Successfully deleted dependents")
+    except Exception as e:
+        print("Exception caught: " + str(e))
+        return False
+
+    
+    # Null out super_ssns for other employees if applicable
+    sql = """
+            UPDATE EMPLOYEE 
+            SET Super_ssn = NULL
+            WHERE Super_ssn = %(Essn)s
+    """
+    try:
+        cursor.execute(sql, {"Essn": essn})
+        connection.commit()
+        print("Successfully nulled corresponding Super_ssns")
+    except Exception as e:
+        print("Exception caught: " + str(e))
+        return False
+    
+    # Delete rows from Works_On
+
+    return True
+    
 
 def remove_employee(cursor, connection):
     """
@@ -224,16 +264,22 @@ def remove_employee(cursor, connection):
             DELETE FROM EMPLOYEE
             WHERE Ssn = %(Ssn)s
     """
-    try: 
-        cursor.execute(sql, ssn_obj)
-        connection.commit()
-        print(f"Succesfully removed employee {ssn}")
-    except Exception as e:
-        # Dependency error -> Must remove dependencies first!
-        if "1451" in str(e):
-            return _remove_employee_dependencies(cursor, connection)
-        print("Exception caught: " + str(e))
-        connection.rollback()
+
+    while True:
+        try: 
+            cursor.execute(sql, ssn_obj)
+            connection.commit()
+            print(f"Succesfully removed employee {ssn}")
+            break
+        except Exception as e:
+            # Dependency error -> Must remove dependencies first!
+            if "1451" in str(e):
+                print(str(e))
+                if _remove_employee_dependencies(cursor, connection, ssn):
+                    continue
+            print("Exception caught: " + str(e))
+            connection.rollback()
+            break
 
 
 def add_new_dependent(cursor, connection):
