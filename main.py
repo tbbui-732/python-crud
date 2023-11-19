@@ -286,12 +286,50 @@ def add_new_dependent(cursor, connection):
         connection.rollback()
 
 
-def remove_dependent():
+def remove_dependent(cursor, connection):
     """
     Remove dependent: Ask for employee SSN. Lock employee record. Show all
     dependents. Ask for the name of the dependent to be removed. Remove the dependent.
     """
-    pass
+
+    # Query user for employee SSN
+    print("Enter employee SSN to remove dependent")
+    ssn = str(input("> "))
+    ssn_obj = {"Ssn": ssn}
+
+    # Show dependents
+    sql = """
+        SELECT * FROM DEPENDENT
+        WHERE Essn = %(Ssn)s
+    """
+    try:
+        cursor.execute(sql, ssn_obj)
+        rows = cursor.fetchall()
+        for row in rows: print(row)
+    except Exception as e:
+        print("Exception caught: " + str(e))
+    
+    # Query user for name of dependent to be removed
+    print("Enter name of dependent to remove")
+    dependent = str(input("> "))
+
+    # Remove the dependent
+    dependent_data = {
+            "Ssn": ssn,
+            "Dependent_name": dependent
+    }
+    sql = """
+        DELETE FROM DEPENDENT
+        WHERE Essn = %(Ssn)s AND Dependent_name = %(Dependent_name)s
+    """
+    try:
+        cursor.execute(sql, dependent_data)
+        connection.commit()
+        print(f"Successfully deleted {dependent}")
+    except Exception as e:
+        print("Exception caught: " + str(e))
+        connection.rollback()
+
 
 def add_new_department():
     """
@@ -395,7 +433,7 @@ def operations(cursor, connection):
 
     elif operation == 6:
         print("Removing dependent...")
-        remove_dependent()
+        remove_dependent(cursor, connection)
 
     elif operation == 7:
         print("Adding new department...")
