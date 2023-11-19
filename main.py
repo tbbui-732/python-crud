@@ -44,12 +44,50 @@ def add_new_employee(cursor, connection):
             print("No changes were made")
 
 
-def view_employee():
+def view_employee(cursor):
     """
     View employee: Ask for employee SSN. For the employee with the given SSN, show all the
     attributes from EMPLOYEE table. Also show supervisor name, department name, and dependents.
     """
-    pass
+    
+    print("Enter employee SSN that you want to view")
+    ssn = str(input("> "))
+    ssn_obj = {"Ssn": ssn}
+
+    sql = """
+            SELECT
+                e.Fname,
+                e.Minit,
+                e.Lname,
+                e.Ssn,
+                e.Bdate,
+                e.Address,
+                e.Sex,
+                e.Salary,
+                e.Super_ssn,
+                e.Dno,
+                s.Fname AS Supervisor_Fname,
+                s.Lname AS Supervisor_Lname,
+                d.Dname AS Department_Name,
+                dep.Dependent_name
+            FROM EMPLOYEE e
+            INNER JOIN 
+                EMPLOYEE s ON e.Super_ssn = s.Ssn
+            INNER JOIN 
+                DEPARTMENT d ON e.Dno = d.Dnumber
+            INNER JOIN 
+                DEPENDENT dep ON e.Ssn = dep.Essn
+            WHERE
+                e.Ssn = %(Ssn)s;
+    """
+
+    try: 
+        cursor.execute(sql, ssn_obj)
+        row = cursor.fetchone()
+        print(row)
+    except Exception as e:
+        print("Exception caught: " + str(e))
+
 
 def modify_employee():
     """
@@ -168,7 +206,7 @@ def operations(cursor, connection):
 
     elif operation == 2:
         print("Viewing employee...")
-        view_employee()
+        view_employee(cursor)
 
     elif operation == 3:
         print("Modifying employee...")
