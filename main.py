@@ -9,23 +9,23 @@ def add_new_employee(cursor, connection):
     Add new employee: Allow users to create a new employee record using this menu option.
     Show proper error message for constraint violations.
     """
-    
+
     print("Format the following values like below")
     print("Fname,Minit,Lname,Ssn,Bdate,Address,Sex,Salary,Super_ssn,Dno")
     employee_data = str(input("> ")).split(",")
-    
+
     new_employee_data = {
-        'Fname':     employee_data[0],
-        'Minit':     employee_data[1],
-        'Lname':     employee_data[2],
-        'Ssn':       employee_data[3],
-        'Bdate':     employee_data[4],
-        'Address':   employee_data[5],
-        'Sex':       employee_data[6],
-        'Salary':    int(employee_data[7]),
-        'Super_ssn': employee_data[8],
-        'Dno':       int(employee_data[9])
-    }
+            'Fname':     employee_data[0],
+            'Minit':     employee_data[1],
+            'Lname':     employee_data[2],
+            'Ssn':       employee_data[3],
+            'Bdate':     employee_data[4],
+            'Address':   employee_data[5],
+            'Sex':       employee_data[6],
+            'Salary':    int(employee_data[7]),
+            'Super_ssn': employee_data[8],
+            'Dno':       int(employee_data[9])
+            }
 
     sql = """
             INSERT INTO EMPLOYEE (Fname, Minit, Lname, Ssn, Bdate, Address, Sex, Salary, Super_ssn, Dno)
@@ -49,7 +49,7 @@ def view_employee(cursor):
     View employee: Ask for employee SSN. For the employee with the given SSN, show all the
     attributes from EMPLOYEE table. Also show supervisor name, department name, and dependents.
     """
-    
+
     print("Enter employee SSN that you want to view")
     ssn = str(input("> "))
     ssn_obj = {"Ssn": ssn}
@@ -95,7 +95,84 @@ def modify_employee(cursor, connection):
     Then allow users to update one or more of the following fields: address, sex, salary,
     super_ssn, and Dno.
     """
-    pass
+
+    # Query user for employee SSN to modify
+    print("Enter employee SSN that you want to modify")
+    ssn = str(input("> "))
+    ssn_obj = {"Ssn": ssn}
+
+    sql = """
+            SELECT * FROM EMPLOYEE WHERE Ssn=%(Ssn)s
+    """
+
+    # Display employee information
+    try: 
+        cursor.execute(sql, ssn_obj)
+        row = cursor.fetchone()
+        print(row)
+    except Exception as e:
+        print("Exception caught: " + str(e))
+
+    # Query user for field to update
+    while True:
+        print("Select a field to update")
+        print("""
+        1. Address
+        2. Sex 
+        3. Salary 
+        4. Super_ssn 
+        5. Dno""")
+        field = int(input("> "))
+
+        if field == 1:
+            # Modify address
+            attribute_name = "Address"
+            new_value = str(input("New address > "))
+            break
+        elif field == 2:
+            # Modify sex
+            attribute_name = "Sex"
+            new_value = str(input("New sex > "))
+            break
+        elif field == 3:
+            # Modify salary
+            attribute_name = "Salary"
+            new_value = str(input("New salary > "))
+            break
+        elif field == 4:
+            # Modify super ssn
+            attribute_name = "Super_ssn"
+            new_value = str(input("New super ssn > "))
+            break
+        elif field == 5:
+            # Modify dno
+            attribute_name = "Dno"
+            new_value = str(input("New department number > "))
+            break
+        else: 
+            print("Invalid field, try again")
+            continue
+
+    # Update changes to database
+    mod_data = {
+            "new_value": new_value,
+            "Ssn": ssn
+
+            }
+
+    sql = f"""
+           UPDATE EMPLOYEE 
+           SET {attribute_name} = %(new_value)s
+           WHERE Ssn=%(Ssn)s
+    """
+
+    try:
+        cursor.execute(sql, mod_data)
+        connection.commit()
+    except Exception as e:
+        print("Exception caught: " + str(e))
+        connection.rollback()
+
 
 def remove_employee():
     """
@@ -173,14 +250,14 @@ def operations(cursor, connection):
     10. add_department_location()
     11. remove_department_location()
     """
-    
+
     # Get a user input
     print(display)
     operation = str(input("> "))
 
     # Check if operation is valid
         # Returning true re-runs operation method
-    
+
     if operation == "q":
         print("Exiting program...")
         return False
