@@ -184,8 +184,8 @@ def _remove_employee_dependencies(cursor, connection, essn):
     """
 
     # Confirm to user to delete dependents
-    print("This action can't be completed without deleting dependents")
-    print("Please confirm that you are willing to delete dependents (y\\n)")
+    print("This action can't be completed without deleting all dependents")
+    print("Please confirm that you are willing to delete all dependencies (y\\n)")
     confirm = str(input("> "))
     if confirm == "n":
         print("No changes have been made")
@@ -202,6 +202,7 @@ def _remove_employee_dependencies(cursor, connection, essn):
         print("Successfully deleted dependents")
     except Exception as e:
         print("Exception caught: " + str(e))
+        connection.rollback()
         return False
 
     
@@ -217,6 +218,7 @@ def _remove_employee_dependencies(cursor, connection, essn):
         print("Successfully nulled corresponding Super_ssns")
     except Exception as e:
         print("Exception caught: " + str(e))
+        connection.rollback()
         return False
    
     # Delete rows from Works_On
@@ -230,7 +232,23 @@ def _remove_employee_dependencies(cursor, connection, essn):
         print("Successfully deleted rows from Works_On")
     except Exception as e:
         print("Exception caught: " + str(e))
+        connection.rollback()
         return False
+
+    
+    # Delete Department Mgr_SSN if applicable
+    sql = """
+            UPDATE DEPARTMENT 
+            SET Mgr_ssn = NULL, 
+                Mgr_start_date = NULL 
+            WHERE Mgr_ssn = %(Essn)s
+    """
+    try:
+        cursor.execute(sql, {"Essn": essn})
+        connection.commit()
+    except Exception as e:
+        print("Exception caught: " + str(e))
+        connection.rollback()
 
     return True
     
