@@ -331,12 +331,34 @@ def remove_dependent(cursor, connection):
         connection.rollback()
 
 
-def add_new_department():
+def add_new_department(cursor, connection):
     """
     Add new department: Allow users to create a new department record using this menu
     option. Show proper error message for constraint violations.
     """
-    pass
+    
+    # Query user for new department data
+    print("Format the new department values as such...")
+    print("Dname,Dnumber,Mgr_ssn,Mgr_start_date")
+    data = str(input("> ")).split(",")
+
+    department_data = {
+            "Dname":    data[0],
+            "Dnumber":  data[1],
+            "Mgr_ssn":  data[2],
+            "Mgr_start_date": data[3]
+    }
+    sql = """
+            INSERT INTO DEPARTMENT (Dname, Dnumber, Mgr_ssn, Mgr_start_date)
+            VALUES (%(Dname)s, %(Dnumber)s, %(Mgr_ssn)s, %(Mgr_start_date)s)
+    """
+    try:
+        cursor.execute(sql, department_data)
+        connection.commit()
+        print("Successfully added new department")
+    except Exception as e:
+        print("Exception caught: " + str(e))
+
 
 def view_department():
     """
@@ -437,7 +459,7 @@ def operations(cursor, connection):
 
     elif operation == 7:
         print("Adding new department...")
-        add_new_department()
+        add_new_department(cursor, connection)
 
     elif operation == 8:
         print("Viewing department...")
