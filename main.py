@@ -497,29 +497,60 @@ def _remove_department_dependencies(cursor, connection, dnumber):
     sql = """
             UPDATE EMPLOYEE 
             SET Dno = NULL 
-            WHERE Dno = %(Dnumber)
+            WHERE Dno = %(Dnumber)s
     """
     try:
         cursor.execute(sql, {"Dnumber": dnumber}) 
         connection.commit()
         print("Successfully nullified employee Dno")
     except Exception as e:
-        print("Exception caught: " + str(e))
+        print("Exception caught nullify: " + str(e))
         connection.rollback()
         return False
 
 
-    # Delete department location
+    # Alter table to remove department location
     sql = """
-            DELETE FROM DEPT_LOCATIONS
-            WHERE Dnumber = %(Dnumber)s
+            ALTER TABLE DEPT_LOCATIONS
+            DROP FOREIGN KEY dept_locations_ibfk_1
     """
     try:
+        cursor.execute(sql)
+        connection.commit()
+        print("Altered table to remove foreign key constraints")
+    except Exception as e:
+        print("Exception caught alter: " + str(e))
+        connection.rollback()
+        return False
+
+    # Allow department location to be automatically deleted on cascade
+    sql = """
+            ALTER TABLE DEPT_LOCATIONS 
+            ADD CONSTRAINT dept_locations_ibfk_1
+            FOREIGN KEY (Dnumber) REFERENCES DEPARTMENT(Dnumber) ON DELETE CASCADE
+    """
+    try:
+        cursor.execute(sql)
+        connection.commit()
+        print("Allow dept_location to delete automatically on cascade")
+    except Exception as e:
+        print("Exception caught cascade: " + str(e))
+        connection.rollback()
+        return False
+
+
+    # Nullify project Dnum
+    sql = """
+            UPDATE PROJECT 
+            SET Dnum = NULL 
+            WHERE Dnum = %(Dnumber)s
+    """
+    try: 
         cursor.execute(sql, {"Dnumber": dnumber})
         connection.commit()
-        print("Successfully deleted department location dependency")
+        print("Successfully nullifed project dnum")
     except Exception as e:
-        print("Exception caught: " + str(e))
+        print("Exception caught cascade: " + str(e))
         connection.rollback()
         return False
 
@@ -561,12 +592,20 @@ def remove_department(cursor, connection):
             DELETE FROM DEPARTMENT 
             WHERE Dnumber = %(Dnumber)s
     """
-    try:
-        cursor.execute(sql, dno_obj)
-        connection.commit()
-        print("Successfully removed department value")
-    except Exception as e:
-        print("Exception caught: " + str(e))
+
+    while True:
+        try:
+            cursor.execute(sql, dno_obj)
+            connection.commit()
+            print("Successfully removed department value")
+            break
+        except Exception as e:
+            if "1451" in str(e):
+                print(e)
+                if _remove_department_dependencies(cursor, connection, dno):
+                    continue
+            print("Exception caught: " + str(e))
+            break
 
 
 def add_department_location(cursor, connection):
