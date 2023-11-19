@@ -655,7 +655,46 @@ def add_department_location(cursor, connection):
 
 # TODO: Fix the dependency issues here by altering constraint requirements!
 def _update_remove_dloc_dependencies(cursor, connection, dnumber, dlocation):
-    pass
+    # Remove all foreign key constraints
+    remove_constraint = """
+            ALTER TABLE EMPLOYEE 
+            DROP FOREIGN KEY employee_ibfk_1
+    """
+    try:
+        cursor.execute(remove_constraint)
+        print("Constraints remove")
+    except Exception as e:
+        print("Exception caught: " + str(e))
+        return False
+
+    # Make changes again
+    sql = """
+            DELETE FROM DEPT_LOCATIONS 
+            WHERE Dnumber = %(Dnumber)s AND Dlocation = %(Dlocation)s
+    """
+    try:
+        cursor.execute(sql)
+        connection.commit()
+        print("Successfully removed department location")
+    except Exception as e:
+        print("Exception caught delete location: " + str(e))
+        connection.rollback()
+        return False
+    
+    # Apply foreign key constraints back
+    add_constraints_back = """
+            ALTER TABLE Employee
+            ADD CONSTRAINT employee_ibfk_1
+            FOREIGN KEY (Dno) REFERENCES Dept_locations(Dnumber);
+    """
+    try:
+        cursor.execute(add_constraints_back)
+        print("Constraints added back")
+    except Exception as e:
+        print("Exception caught adding constraints back: " + str(e))
+        return False
+    
+    return True
 
 
 def remove_department_location(cursor, connection):
@@ -699,6 +738,9 @@ def remove_department_location(cursor, connection):
         connection.commit()
         print("Successfully removed department location")
     except Exception as e:
+        if "1451" in str(e):
+            if not _update_remove_dloc_dependencies(cursor, connection, dnumber, location):
+                pass
         print("Exception caught: " + str(e))
         connection.rollback()
 
