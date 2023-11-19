@@ -71,14 +71,14 @@ def view_employee(cursor):
                 d.Dname AS Department_Name,
                 dep.Dependent_name
             FROM EMPLOYEE e
-            INNER JOIN 
+            LEFT JOIN 
                 EMPLOYEE s ON e.Super_ssn = s.Ssn
-            INNER JOIN 
+            LEFT JOIN 
                 DEPARTMENT d ON e.Dno = d.Dnumber
-            INNER JOIN 
+            LEFT JOIN 
                 DEPENDENT dep ON e.Ssn = dep.Essn
             WHERE
-                e.Ssn = %(Ssn)s;
+                e.Ssn = %(Ssn)s
     """
 
     try: 
