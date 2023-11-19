@@ -4,3 +4,6 @@ env/
 
 # dotenv
 .env
+
+# temporary files
+tmp/
