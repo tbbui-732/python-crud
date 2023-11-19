@@ -817,47 +817,69 @@ def operations(cursor, connection):
 
     if operation == 1:
         print("Adding new employee...")
+        lock_file = acquire_lock()
         add_new_employee(cursor, connection)
+        release_lock(lock_file)
 
     elif operation == 2:
         print("Viewing employee...")
+        lock_file = acquire_lock()
         view_employee(cursor)
+        release_lock(lock_file)
 
     elif operation == 3:
         print("Modifying employee...")
+        lock_file = acquire_lock()
         modify_employee(cursor, connection)
+        release_lock(lock_file)
 
     elif operation == 4:
         print("Removing employee...")
+        lock_file = acquire_lock()
         remove_employee(cursor, connection)
+        release_lock(lock_file)
 
     elif operation == 5:
         print("Adding new dependent...")
+        lock_file = acquire_lock()
         add_new_dependent(cursor, connection)
+        release_lock(lock_file)
 
     elif operation == 6:
         print("Removing dependent...")
+        lock_file = acquire_lock()
         remove_dependent(cursor, connection)
+        release_lock(lock_file)
 
     elif operation == 7:
         print("Adding new department...")
+        lock_file = acquire_lock()
         add_new_department(cursor, connection)
+        release_lock(lock_file)
 
     elif operation == 8:
         print("Viewing department...")
+        lock_file = acquire_lock()
         view_department(cursor)
+        release_lock(lock_file)
 
     elif operation == 9:
         print("Removing department...")
+        lock_file = acquire_lock()
         remove_department(cursor, connection)
+        release_lock(lock_file)
 
     elif operation == 10:
         print("Adding department location...")
+        lock_file = acquire_lock()
         add_department_location(cursor, connection)
+        release_lock(lock_file)
 
     elif operation == 11:
         print("Removing department location...")
+        lock_file = acquire_lock()
         remove_department_location(cursor, connection)
+        release_lock(lock_file)
 
     return True
 
