@@ -1,4 +1,3 @@
-# CSE4701 - Project 2
 Basic CLI CRUD application
 
 ## Pre-reqs
